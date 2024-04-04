@@ -254,8 +254,8 @@ common:
 # File Anchors
   - &AnimFramework
     name: 'tools/GenerateFNIS_for_Users/GenerateFNISforUsers.exe'
-    display: '[Fores New Idles in Skyrim SE](https://www.nexusmods.com/skyrimspecialedition/mods/3038/) **OR** [Nemesis Unlimited Behavior Engine](https://github.com/ShikyoKira/Project-New-Reign---Nemesis-Main/releases/)'
-    condition: 'not file("Nemesis_Engine/Nemesis Unlimited Behavior Engine.exe")'
+    display: '[Fores New Idles in Skyrim SE](https://www.nexusmods.com/skyrimspecialedition/mods/3038/) **OR** [Nemesis Unlimited Behavior Engine](https://github.com/ShikyoKira/Project-New-Reign---Nemesis-Main/releases/) **OR** [Pandora Behaviour Engine+](https://github.com/Monitor144hz/Pandora-Behaviour-Engine-Plus/releases/)'
+    condition: 'not file("Nemesis_Engine/Nemesis Unlimited Behavior Engine.exe") and not file("Pandora Behaviour Engine+.exe")'
 
   - &BaseObjSwap
     name: 'SKSE/Plugins/po3_BaseObjectSwapper.dll'
@@ -2833,7 +2833,7 @@ plugins:
     after: [ 'Requiem.esp' ]
     req:
       - <<: *AnimFramework
-        condition: 'file("meshes/actors/character/character assets/skeleton.hkx") and not file("Nemesis_Engine/Nemesis Unlimited Behavior Engine.exe")'
+        condition: 'file("meshes/actors/character/character assets/skeleton.hkx") and not file("Nemesis_Engine/Nemesis Unlimited Behavior Engine.exe") and not file("Pandora Behaviour Engine+.exe")'
       - name: 'RaceMenu.esp'
         display: '[RaceMenu Special Edition](https://www.nexusmods.com/skyrimspecialedition/mods/19080/)'
         condition: 'file("scripts/RaceMenuPluginXPMSE.pex")'
@@ -3787,6 +3787,32 @@ plugins:
     clean:
       - crc: 0xE0447A92
         util: 'SSEEdit v4.0.4b'
+
+  - name: 'TMDWinery.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/115363/'
+        name: 'TMD Winery'
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/115716/'
+        name: 'Diverse Winery - TMD'
+    req:
+      - <<: *BaseObjSwap
+        condition: 'file("DiverseTMDWinery_SWAP.ini")'
+    msg:
+      - <<: *requiresResources
+        subs: [ '[TMD Winery](https://www.nexusmods.com/skyrimspecialedition/mods/115363/)' ]
+        condition: 'file("DiverseTMDWinery_SWAP.ini") and not file("Meshes/TheMilkDrinker/TMDWinery/winebottle01a.nif")'
+    tag:
+      - name: Deactivate
+        condition: 'not file("DiverseTMDWinery_SWAP.ini")'
+      - name: Graphics
+        condition: 'not file("DiverseTMDWinery_SWAP.ini")'
+      - name: ObjectBounds
+        condition: 'not file("DiverseTMDWinery_SWAP.ini")'
+    clean:
+      - crc: 0x6F26C4B6
+        util: 'SSEEdit v4.1.5d'
+      - crc: 0xB37E94A7
+        util: 'SSEEdit v4.1.5d'
 
   - name: 'Unique Uniques SE.*\.esp'
     url:

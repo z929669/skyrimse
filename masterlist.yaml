@@ -163,10 +163,6 @@ prelude:
       type: say
       content: 'If you add, remove, or update plugins that alter WRLD/CELL records, remember to update this module with **xLODGen**.'
 
-    - &supersede
-      type: warn
-      content: 'You seem to be using **{0}**, but it has been superseded. It is recommended that you use **{1}** instead.'
-
     - &useBashTweakInstead
       type: say
       content: 'A Bashed Patch tweak can be used instead of this plugin. {0}'
@@ -229,6 +225,10 @@ prelude:
       detail: 'It is strongly recommended not to use mods that contain **deleted navmeshes** as they''re known to cause crashes. **Deleted navmeshes** must be corrected manually (a complex process that should be done by the mod author). More information on **deleted navmeshes** is provided [here](https://www.creationkit.com/index.php?title=Fixing_Navmesh_Deletion_Tutorial).'
 
   # Global Anchors
+    - &incompatible
+      type: error
+      content: '{0} is incompatible with {1}, but both are present.'
+
     - &latestLOOTThread
       type: say
       content: '[Latest LOOT thread]({0}).'
@@ -249,6 +249,10 @@ prelude:
         - 'Skyrim Script Extender'
         - '[SKSE](https://skse.silverlock.org)'
       condition: 'not file("scripts/skse.pex") and file("../skse64_loader.exe")'
+
+    - &supersede
+      type: warn
+      content: 'You seem to be using **{0}**, but it has been superseded. It is recommended that you use **{1}** instead.'
 
 common:
 # File Anchors
@@ -1879,8 +1883,24 @@ plugins:
   - name: 'msjm01_arquebus.esp'
     group: *verifiedCreationsGroup
 
+  # Bards College Expansion
+  - name: 'kinggathcreations_bard.esm'
+    group: *verifiedCreationsGroup
+
+  # Bthar Caverns
+  - name: 'bthar caverns.esl'
+    group: *verifiedCreationsGroup
+
+  # Classic Dialog Menu
+  - name: 'ftadialoguemenu.esl'
+    group: *verifiedCreationsGroup
+
   # East Empire Expansion
   - name: 'kinggathcreations_eastempirecompany.esp'
+    group: *verifiedCreationsGroup
+
+  # Echos of the Vale
+  - name: 'echoesofthevale.esp'
     group: *verifiedCreationsGroup
 
   # Katja The Thief
@@ -1891,8 +1911,28 @@ plugins:
   - name: 'legendarydungeons-dwemer.esp'
     group: *verifiedCreationsGroup
 
+  # Legendary Dungeons: Nordic Secrets
+  - name: 'legendarydungeons-nordic.esm'
+    group: *verifiedCreationsGroup
+
+  # Morthal
+  - name: 'morthal.esp'
+    group: *verifiedCreationsGroup
+
   # Shadetree Lodge
   - name: 'ceejsse001_lodge.esp'
+    group: *verifiedCreationsGroup
+
+  # Silent Moons Weapons
+  - name: 'maar01_silentmoonsweapons.esp'
+    group: *verifiedCreationsGroup
+
+  # Spelltome Craft
+  - name: 'spelltomecrafting.esl'
+    group: *verifiedCreationsGroup
+
+  # Thief Hideouts
+  - name: 'ceejsse001_hideouts.esl'
     group: *verifiedCreationsGroup
 
   # Winterfrost Plus Edition
@@ -1916,7 +1956,7 @@ plugins:
     after: [ 'BOS Master Occlusion.esm' ]
     msg:
       - <<: *obsolete
-        condition: 'readable("../SkyrimSE.exe") and product_version("../SkyrimSE.exe", "1.6.629.0", >=) and version("Unofficial Skyrim Special Edition Patch.esp", "4.2.9a", <)'
+        condition: 'readable("../SkyrimSE.exe") and product_version("../SkyrimSE.exe", "1.6.1130.0", >=) and version("Unofficial Skyrim Special Edition Patch.esp", "4.3.1", <)'
       - <<: *patch3rdParty_KPH_CACO
         condition: 'active("Complete Alchemy & Cooking Overhaul.esp") and not active("CACO_USSEP_Patch.esp") and not active("ccqdrsse001-survivalmode.esl")'
       - <<: *patch3rdParty
@@ -1931,12 +1971,11 @@ plugins:
         condition: 'checksum("meshes/armor/circlets/circletf1.nif", BC2EE889) and not file("meshes/uskp/armor/circlets/FemElfCirclets")'
       - <<: *versionXofYorGreaterRequired
         subs:
-          - '1.6.629'
+          - '1.6.1130'
           - 'Skyrim Special Edition'
-        condition: 'readable("../SkyrimSE.exe") and product_version("../SkyrimSE.exe", "1.6.629.0", <) and version("Unofficial Skyrim Special Edition Patch.esp", "4.2.8", >=)'
+        condition: 'readable("../SkyrimSE.exe") and product_version("../SkyrimSE.exe", "1.6.1130.0", <) and version("Unofficial Skyrim Special Edition Patch.esp", "4.3.1", >=)'
     clean:
-      - crc: 0xF82ECF21
-        util: 'SSEEdit v4.0.4c'
+      # Do not clean - 1 ITM that is likely not worth cleaning
       # German
       - crc: 0xB3AB07FD
         util: 'SSEEdit v4.0.4'
@@ -2495,7 +2534,7 @@ plugins:
         condition: 'not file("scripts/ski_playerloadgamealias.pex") and ((active("SofiaFollower.esp") and checksum("SofiaFollower.bsa", 2F513E13)) or (active("ConfigureCommentaryRate.esp") and checksum("ConfigureCommentaryRate.bsa", EF4CBA70)) or (active("Thunderchild - Epic Shout Package.esp") and checksum("Thunderchild - Epic Shout Package.bsa", A599B10F)))'
     clean:
       - crc: 0x79ACE179
-        util: 'SSEEdit v4.0.4c'
+        util: 'SSEEdit v4.1.5f'
 
 ###### AudioVisual ######
   - name: '___SNOW_FIX.esp'
@@ -2676,26 +2715,30 @@ plugins:
       - <<: *patch3rdParty_KPH_CACO
         condition: 'active("Complete Alchemy & Cooking Overhaul.esp") and not active("CACO_Improved Fire Salts Frost Salts and Glow Dust Patch.esp")'
 
-  - name: 'Particle Patch for ENB( SSE)?\.esp'
+  - name: 'Particle Patch( for ENB( SSE)?)?\.esp'
     url:
       - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/65720/'
-        name: 'Particle Patch for ENB'
-  - name: 'Particle Patch for ENB.esp'
+        name: 'Particle Patch'
+  - name: 'Particle Patch( for ENB)?\.esp'
     group: *fixesGroup
     msg:
       - <<: *alsoUseX
         subs: [ '[ENB Helper](https://www.nexusmods.com/skyrimspecialedition/mods/23174/)' ]
         condition: 'file("../skse64_loader.exe") and file("../d3d11.dll") and not file("skse/plugins/ENBHelperSE.dll")'
+    tag:
+      - -C.Climate
+      - -C.ImageSpace
+      - Deactivate
     clean:
-      - crc: 0x19AE5E09
-        util: 'SSEEdit v4.0.4b'
+      - crc: 0x7F28E20B
+        util: 'SSEEdit v4.1.5g'
   - name: 'Particle Patch for ENB SSE.esp'
     url:
       - link: 'http://enbseries.enbdev.com/forum/viewtopic.php?t=1499/'
         name: 'Skyrim particle patch for ENB'
     msg:
       - <<: *obsolete
-        subs: [ '[Particle Patch for ENB](https://www.nexusmods.com/skyrimspecialedition/mods/65720/)' ]
+        subs: [ '[Particle Patch](https://www.nexusmods.com/skyrimspecialedition/mods/65720/)' ]
 
   - name: 'PilgrimsDelight.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/3273/' ]
@@ -3824,7 +3867,7 @@ plugins:
       - ObjectBounds
     clean:
       - crc: 0xC35AC958
-        util: 'SSEEdit v4.0.4b'
+        util: 'SSEEdit v4.1.5f'
 
   - name: '(Vibrant weapons.*|VW - Enchanting Adjustments patch)\.es(l|p)'
     url:
@@ -3910,8 +3953,6 @@ plugins:
         condition: 'file("../x3daudio1_7.dll")'
       - <<: *compatNotes
         subs: [ 'https://forums.nexusmods.com/index.php?/topic/6016803-audio-overhaul-for-skyrim-se/?p=60245661/' ]
-      - <<: *patch3rdParty_LotD
-        condition: 'active("LegacyoftheDragonborn.esm") and not active("DBM_AOS_Patch.esp") and not file("Audio Overhaul Skyrim\.esp_\w+_SRD\.yaml")'
       - <<: *patch3rdParty_RPC
         condition: 'active("Requiem.esp") and not active("Requiem - Audio Overhaul Skyrim.esp")'
       - <<: *patch3rdParty_UVCPC
@@ -4041,6 +4082,15 @@ plugins:
     clean:
       - crc: 0x6560786B
         util: 'SSEEdit v4.0.4c'
+
+  - name: 'LORKHAN - UI Sound Effects.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/115096/'
+        name: 'LORKHAN - Soundtrack Replacer'
+    tag: [ Sound ]
+    clean:
+      - crc: 0x54F2360D
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'LSFX-SSE-Audiosettings.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/1841/' ]
@@ -7475,15 +7525,34 @@ plugins:
   - name: 'Durnehviir God of Death.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/12086/' ]
     after: [ 'KS Dragon Overhaul 2.esp' ]
+    inc: [ 'Durnehviir God of Death - Remastered.esp' ]
+    msg:
+      - <<: *obsolete
+        subs: [ '[DURNEHVIIR GOD OF DEATH - REMASTERED (Ultra HD Dragon Retexture)](https://www.nexusmods.com/skyrimspecialedition/mods/88140/)' ]
     tag:
       - Actors.ACBS
       - Actors.Spells
       - Actors.Stats
+
+  - name: 'Durnehviir God of Death - Remastered.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/88140/'
+        name: 'Edmond''s DURNEHVIIR GOD OF DEATH - REMASTERED (Ultra HD Dragon Retexture)'
+    after: [ 'DurnehviirResurrected.esp' ]
+    msg:
+      - <<: *patchIncluded
+        subs: [ 'Durnehviir Resurrected' ]
+        condition: 'active("DurnehviirResurrected.esp") and not active("Durnehviir Resurrected (Fast|Instant|Normal) - God Of Death Remastered Patch\.esp")'
+    tag:
+      - Actors.ACBS
+      - Actors.Perks.Add
+      - Actors.Spells
+      - Actors.Stats
+      - Graphics
+      - Keywords
     clean:
-      - crc: 0xE8EB056C
-        util: 'SSEEdit v4.0.3'
-      - crc: 0x498D2453
-        util: 'SSEEdit v4.0.3'
+      - crc: 0x0C6A8983
+        util: 'SSEEdit v4.1.5g'
 
   - name: 'DwemerSpectresLegendary.esp'
     url:
@@ -9449,7 +9518,7 @@ plugins:
     dirty:
       - <<: *quickClean
         crc: 0xD6093F62
-        util: '[SSEEdit v4.0.4b](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
+        util: '[SSEEdit v4.1.5f](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
         itm: 9
 
   - name: 'Creation Club Integration - Studded Dragonscale.esp'
@@ -9678,6 +9747,15 @@ plugins:
     clean:
       - crc: 0x0F22CA44
         util: 'SSEEdit v4.0.4c'
+
+  - name: 'LokiHorses.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/57790/'
+        name: 'Horses Simply Turn Better'
+    after: [ 'Convenient Horses.esp' ]
+    clean:
+      - crc: 0x004351CB
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'Marc.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/30404/' ]
@@ -10085,6 +10163,28 @@ plugins:
       - SpellStats
       - Text
     # Do not clean - ITMs are intentional according to the author.
+
+  - name: 'Take A Peek - (New Stealth Mechanic|Simply Knock Mini Patch)\.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/66908/'
+        name: 'Take a Peek - New Stealth Mechanic'
+  - name: 'Take A Peek - New Stealth Mechanic.esp'
+    msg:
+      - <<: *alsoUseX
+        subs: [ '[ConsoleUtilSSE](https://www.nexusmods.com/skyrimspecialedition/mods/24858/)' ]
+        condition: 'not file("SKSE/Plugins/ConsoleUtilSSE.dll")'
+      - <<: *alsoUseX
+        subs: [ '[Dynamic Animation Replacer](https://www.nexusmods.com/skyrimspecialedition/mods/33746/)' ]
+        condition: 'not file("SKSE/Plugins/DynamicAnimationReplacer.dll")'
+      - *requiresMCM
+    clean:
+      - crc: 0x02AC432B
+        util: 'SSEEdit v4.1.5f'
+  - name: 'Take A Peek - Simply Knock Mini Patch.esp'
+    msg:
+      - <<: *alreadyInOrFixedByX
+        subs: [ '**Simply DAK Knock Peek.esp**' ]
+        condition: 'active("Simply DAK Knock Peek.esp")'
 
   - name: 'Tentapalooza.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/652/' ]
@@ -11181,12 +11281,7 @@ plugins:
       - Graphics
   - name: 'SAFO - Valdacil.esp'
     msg:
-      - type: warn
-        content:
-          - lang: en
-            text: 'This plugin seems to be outdated and may not be compatible with the latest version of its master files.'
-          - lang: de
-            text: 'Dieses Plugin scheint veraltet zu sein und ist möglicherweise nicht mehr kompatibel mit der aktuellsten Version seiner Master-Dateien.'
+      - <<: *patchOutdated
         condition: 'checksum("SAFO - Valdacil.esp", DE73CDD3)'
   - name: 'SAFO - Wounds.esp'
     req: [ 'SAFO.esp' ]
@@ -14273,6 +14368,10 @@ plugins:
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/21625/' ]
     msg: [ *patch3rdParty_SRPC_Redux ]
 
+  - name: 'dwagonbown goes uwu.esp'
+    url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/35441/' ]
+    group: *lateLoadersGroup
+
   - name: 'Fertility Mode.esm'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/13068/' ]
     msg: [ *patch3rdParty_SRPC_Redux ]
@@ -14292,12 +14391,15 @@ plugins:
       - name: -Names
         condition: 'version("Guard Dialogue Overhaul.esp", "2.17", >=)'
     clean:
+      # Redux, True GDO Port
       - crc: 0x6ABC1129
         util: 'SSEEdit v4.0.2f'
+      # Redux
       - crc: 0x82FE6344
         util: 'SSEEdit v4.0.2f'
-      - crc: 0x18AEFA4B
-        util: 'SSEEdit v4.0.3h (Hotfix 1)'
+      # SE
+      - crc: 0x21C5C3DB
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'How Hard Is This Persuasion Check.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/23886/' ]
@@ -14429,8 +14531,8 @@ plugins:
       - 'Relationship Dialogue Overhaul.esp'
     tag: [ Actors.Factions ]
     clean:
-      - crc: 0xF4371E42
-        util: 'SSEEdit v4.1.5c EXTREMELY EXPERIMENTAL'
+      - crc: 0x4B9BF8A1
+        util: 'SSEEdit v4.1.5f'
   - name: 'More Dialogue Options.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/28905/' ]
     after: [ 'Misc Dialogue Edits.esp' ]
@@ -14730,10 +14832,8 @@ plugins:
       - <<: *patch3rdParty_RPC
         condition: 'active("Requiem.esp") and not active("Requiem - SkyTEST.esp")'
     clean:
-      - crc: 0xBC4325B9
-        util: 'SSEEdit v4.0.3h (Hotfix 1)'
-      - crc: 0x1A2AC119
-        util: 'SSEEdit v4.0.3h (Hotfix 1)'
+      - crc: 0x338DA83E
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'TavernAIFix.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/23107/' ]
@@ -15094,14 +15194,16 @@ plugins:
         condition: 'active("YASH2.esp") and not active("BetterQuestObjectives - YASH Patch.esp")'
     tag: [ Text ]
     clean:
-      - crc: 0x1D471A94
-        util: 'SSEEdit v4.0.4c'
+      # USSEP
+      - crc: 0xDF1DDA2D
+        util: 'SSEEdit v4.1.5f'
+      # Non-USSEP
       - crc: 0x1FC5AB07
         util: 'SSEEdit v4.0.4c'
   - name: 'BetterQuestObjectives-DBForevertoMisc.esp'
     clean:
       - crc: 0x81F203A7
-        util: 'SSEEdit v4.0.4c'
+        util: 'SSEEdit v4.1.5f'
   - name: 'BetterQuestObjectives-AlternateStartPatch.esp'
     after: [ 'BetterQuestObjectives.esp' ]
     clean:
@@ -15366,8 +15468,8 @@ plugins:
         subs: [ 'JK''s Temple of the Divines' ]
         condition: 'active("JK''s Temple of the Divines.esp") and not (active("CWR_JKTemple_Patch.esp") or active("JKs Temple of the Divines - After the Civil War patch.esp"))'
     clean:
-      - crc: 0x388DAD91
-        util: 'SSEEdit v4.0.4b'
+      - crc: 0x56B61B44
+        util: 'SSEEdit v4.1.5f'
   - name: 'CW_Enjia.esp'
     msg:
       - <<: *useVersion
@@ -15721,6 +15823,27 @@ plugins:
     clean:
       - crc: 0xD758507C
         util: 'SSEEdit v4.0.4c'
+
+  - name: 'Infiltration (- Quest Expansion|QE - Bandit War Patch)\.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/114054/'
+        name: 'Infiltration - Quest Expansion'
+  - name: 'Infiltration - Quest Expansion.esp'
+    msg:
+      - <<: *patchProvided
+        subs: [ 'Lawless - A Bandit Overhaul' ]
+        condition: 'active("Bandit War.esp") and not active("Infiltration QE - Bandit War Patch.esp")'
+    tag:
+      - Actors.AIData
+      - Actors.AIPackages
+      - Relations.Change
+    clean:
+      - crc: 0xE9A16C76
+        util: 'SSEEdit v4.1.5d'
+  - name: 'Infiltration QE - Bandit War Patch.esp'
+    clean:
+      - crc: 0x6A37C456
+        util: 'SSEEdit v4.1.5d'
 
   - name: 'InnoLostAlt.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/24236/' ]
@@ -16355,8 +16478,8 @@ plugins:
       - Names
       - Text
     clean:
-      - crc: 0x9F3FDA79
-        util: 'SSEEdit v4.0.3'
+      - crc: 0x79651CA2
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'TheGemstoneProphecy.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/20629/' ]
@@ -16530,23 +16653,19 @@ plugins:
 
   - name: 'WheelsOfLull.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/748/' ]
-    msg:
-      - <<: *patchIncluded
-        subs: [ 'Airship - Dev Aveza' ]
-        condition: 'active("DA_Skyship.esm") and not active("WheelsofLull-Skyship.esp")'
-      - <<: *patchProvided
-        subs: [ 'High Poly Head' ]
-        condition: 'active("High Poly Head.esm") and not active("High Poly NPCs - WheelsOfLull.esp")'
-      - <<: *patch3rdParty_LotD
-        condition: 'active("LegacyoftheDragonborn.esm") and not active("DBM_WheelsofLull_Patch.esp") and version("LegacyoftheDragonborn.esm", "5.0.24", >=)'
     inc:
       - name: 'WoLStartAt40.esp'
         condition: 'version("WheelsOfLull.esp", "5.1.0", >=)'
+    msg:
+      - <<: *patch3rdParty_LotD
+        condition: 'active("LegacyoftheDragonborn.esm") and not active("DBM_WheelsofLull_Patch.esp") and version("LegacyoftheDragonborn.esm", "5.0.24", >=)'
+      - <<: *patchIncluded
+        subs: [ 'Airship - Dev Aveza' ]
+        condition: 'active("DA_Skyship.esm") and not active("WheelsofLull-Skyship.esp")'
+      - *requiresMCM
     clean:
-      - crc: 0xE6561EE8
-        util: 'SSEEdit v4.0.3'
-      - crc: 0xAC83F041
-        util: 'SSEEdit v4.0.3'
+      - crc: 0x601BABC8
+        util: 'SSEEdit v4.1.5g'
   - name: 'High Poly NPCs - WheelsOfLull.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/748/' ]
     msg:
@@ -17170,6 +17289,29 @@ plugins:
         util: '[SSEEdit v4.0.4c](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
         itm: 1
 
+  - name: 'QuickLootEE.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/69980/'
+        name: 'QuickLoot EE'
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/120075/'
+        name: 'QuickLootIE'
+    msg:
+      - <<: *patchUpdateAvailable
+        subs: [ '[QuickLootIE](https://www.nexusmods.com/skyrimspecialedition/mods/120075/) **OR** [1.6.1170 Support (DLL Only) - Fixed](https://github.com/WaterFace/QuickLootEE/releases/latest)' ]
+        condition: 'readable("../SkyrimSE.exe") and product_version("../SkyrimSE.exe", "1.5.97.0", >) and version("SKSE/Plugins/QuickLootEE.dll", "1.2.0.0", <) and not file("SKSE/Plugins/QuickLootEE-NG.dll")'
+      - *requiresMCM
+      - <<: *useOnlyOneX
+        subs: [ 'QuickLoot DLL' ]
+        condition: 'many("SKSE/Plugins/QuickLootEE(-NG)?\.dll")'
+      - <<: *versionXIncY
+        subs:
+          - 'QuickLoot EE'
+          - 'Skyrim'
+        condition: 'readable("../SkyrimSE.exe") and product_version("../SkyrimSE.exe", "1.5.97.0", >) and version("SKSE/Plugins/QuickLootEE.dll", "1.2.0.0", <) and not file("SKSE/Plugins/QuickLootEE-NG.dll")'
+    clean:
+      - crc: 0x0F6F63D9
+        util: 'SSEEdit v4.1.5g'
+
   - name: 'tdgsseActivateToInteract.esl'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/35492/' ]
     msg:
@@ -17238,8 +17380,13 @@ plugins:
     tag: [ Text ]
   - name: 'YOT - Your Own Thoughts.esp'
     clean:
+      # AE
+      - crc: 0x2D1BF884
+        util: 'SSEEdit v4.1.5f'
+      # SE
       - crc: 0x63C713B2
         util: 'SSEEdit v4.0.3h (Hotfix 1)'
+      # SE, Alt. Game Mechanics Vanilla
       - crc: 0x5518CDFF
         util: 'SSEEdit v4.0.3h (Hotfix 1)'
 
@@ -17841,8 +17988,8 @@ plugins:
   - name: 'BeyondSkyrimMerchant.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/31519/' ]
     clean:
-      - crc: 0xA4C58303
-        util: 'SSEEdit v4.0.3'
+      - crc: 0x51469A86
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'BGCollectables.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/15092/' ]
@@ -18083,22 +18230,31 @@ plugins:
       - <<: *BaseObjSwap
         condition: 'file("C.O.I.N_SWAP.ini")'
     msg:
+      - <<: *alsoUseX
+        subs: [ '[Inventory Interface Information Injector](https://www.nexusmods.com/skyrimspecialedition/mods/85702/)' ]
+        condition: 'file("SKSE/Plugins/InventoryInjector/C.O.I.N.json") and not file("SKSE/Plugins/InventoryInjector.dll")'
       - <<: *patchIncluded
         subs: [ 'Beyond Skyrim - Bruma' ]
         condition: 'active("BSHeartland.esm") and not active("C.O.I.N. - Beyond Skyrim Patch.esp")'
       - <<: *patchIncluded
+        subs: [ 'Description Framework' ]
+        condition: 'file("SKSE/Plugins/DescriptionFramework.dll") and not file("C.O.I.N_DESC.ini")'
+      - <<: *patchIncluded
         subs: [ 'Saints & Seducers (Creation Club)' ]
-        condition: 'active("ccbgssse025-advdsgs.esm") and not active("C.O.I.N. - Saints and Seducers Patch.esp")'
+        condition: 'active("ccbgssse025-advdsgs.esm") and not active("Skyrim Extended Cut - Saints and Seducers.esp") and not active("C.O.I.N. - Saints and Seducers Patch.esp")'
       - <<: *patchIncluded
         subs: [ 'The Cause (Creation Club)' ]
         condition: 'active("ccbgssse067-daedinv.esm") and not active("C.O.I.N. - The Cause Patch.esp")'
+      - <<: *requiresMCM
+        type: say
     tag:
       - Delev
       - Names
       - ObjectBounds
+      - -Relev
     clean:
-      - crc: 0xF982CC2C
-        util: 'SSEEdit v4.0.4c'
+      - crc: 0x35E0DEB2
+        util: 'SSEEdit v4.1.5f'
   - name: 'C.O.I.N. - Beyond Skyrim Patch.esp'
     tag:
       - Graphics
@@ -18109,20 +18265,21 @@ plugins:
       - crc: 0xC90FC44E
         util: 'SSEEdit v4.0.4c'
   - name: 'C.O.I.N. - Saints and Seducers Patch.esp'
+    inc: [ 'Skyrim Extended Cut - Saints and Seducers.esp' ]
     tag:
       - Delev
       - Invent.Add
       - Invent.Remove
     clean:
       - crc: 0xE979FDEA
-        util: 'SSEEdit v4.0.4c'
+        util: 'SSEEdit v4.1.5f'
   - name: 'C.O.I.N. - The Cause Patch.esp'
     tag:
       - Invent.Add
       - Invent.Remove
     clean:
       - crc: 0x6D9EC36C
-        util: 'SSEEdit v4.0.4c'
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'Common Clothes and Armors.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/21305/' ]
@@ -18574,21 +18731,19 @@ plugins:
         util: 'SSEEdit v4.0.2f'
 
   - name: 'Immersive Jewelry.esp'
-    url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/5336/' ]
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/5336/'
+        name: 'Immersive Jewelry SSE'
     after: [ 'Complete Crafting Overhaul_Remastered.esp' ]
     inc: [ 'Lootification.esm' ]
     msg:
-      - <<: *patch3rdParty_LotD
-        condition: 'active("LegacyoftheDragonborn.esm") and not active("DBM_ImmersiveJewelry_Patch.esp")'
+      - <<: *obsolete
+        subs: [ 'Immersive Jewelry 1.06a' ]
+        condition: 'version("Immersive Jewelry.esp", "1.05", ==)'
       - <<: *patch3rdParty_KPH_CCOR
         condition: 'active("Complete Crafting Overhaul_Remastered.esp") and not active("Immersive Jewelry_CCOR_Patch.esp")'
-      - type: warn
-        content:
-          - lang: en
-            text: 'Version 1.05 of this mod contains corrupt records. Update to version 1.06a.'
-          - lang: de
-            text: 'Die Version 1.05 dieses Mods enthält korrupte Einträge. Aktualieren Sie zu Version 1.06a.'
-        condition: 'version("Immersive Jewelry.esp", "1.05", ==)'
+      - <<: *patch3rdParty_LotD
+        condition: 'active("LegacyoftheDragonborn.esm") and not active("DBM_ImmersiveJewelry_Patch.esp")'
     tag:
       - Delev
       - Graphics
@@ -18606,7 +18761,7 @@ plugins:
       # version: 1.06a
       - <<: *quickClean
         crc: 0x20AA5984
-        util: '[SSEEdit v4.0.2f](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
+        util: '[SSEEdit v4.1.5f](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
         itm: 1
 
   - name: 'Immersive Sanguine Note SE.esp'
@@ -18856,6 +19011,31 @@ plugins:
         crc: 0x7C263915
         util: '[SSEEdit v4.0.3g](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
         itm: 3
+
+  - name: 'Lollygagging Fashions( WACCF)?\.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/117833/'
+        name: 'Lollygaggin'' - Vanilla Guard Armor Replacer'
+  - name: 'Lollygagging Fashions.esp'
+    tag:
+      - Delev
+      - Graphics
+      - Keywords
+      - Names
+      - ObjectBounds
+      - Outfits.Add
+      - Outfits.Remove
+      - Stats
+    clean:
+      - crc: 0xFDD146F9
+        util: 'SSEEdit v4.1.5f'
+  - name: 'Lollygagging Fashions WACCF.esp'
+    tag:
+      - Graphics
+      - Names
+    clean:
+      - crc: 0x20B032B0
+        util: 'SSEEdit v4.1.5f'
 
   - name: 'Lore Weapon Expansion( - Daedric Crescent| - Goldbrand| - Relics of the Crusader)?\.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/9660/' ]
@@ -19192,7 +19372,7 @@ plugins:
       - crc: 0x3023FFC9
         util: 'SSEEdit v4.0.3h (Hotfix 1)'
 
-  - name: 'PrvtI_(HeavyArmory.*|HA.*|Fishing_DraugrWeapons)\.esp'
+  - name: 'PrvtI_(HeavyArmory|HA).*\.esp'
     url:
       - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/6308/'
         name: 'Heavy Armory - New Weapons'
@@ -19205,11 +19385,8 @@ plugins:
       - <<: *patch3rdParty_RPC
         condition: 'active("Requiem.esp") and not active("Requiem - Heavy Armory.esp")'
       - <<: *patchIncluded
-        subs: [ 'Complete Crafting Overhaul Remastered' ]
-        condition: 'active("Complete Crafting Overhaul_Remastered.esp") and not active("PrvtI_HeavyArmory(_AA)?_CCOR_Patch\.esp")'
-      - <<: *patchIncluded
         subs: [ 'Weapons Armor Clothing and Clutter Fixes' ]
-        condition: 'active("Weapons Armor Clothing & Clutter Fixes.esp") and not active("Complete Crafting Overhaul_Remastered.esp") and not active("PrvtI_HeavyArmory(_AA)?_WACCF_Patch\.esp")'
+        condition: 'active("Weapons Armor Clothing & Clutter Fixes.esp") and not active("PrvtI_HeavyArmory_WACCF_Patch.esp")'
     tag:
       - Delev
       - Invent.Add
@@ -19221,11 +19398,6 @@ plugins:
     clean:
       - crc: 0x89D66889
         util: 'SSEEdit v4.0.4c'
-  - name: 'PrvtI_HeavyArmory_WACCF_Patch.esp'
-    msg:
-      - <<: *alreadyInX
-        subs: [ 'PrvtI_HeavyArmory_CCOR_Patch.esp' ]
-        condition: 'active("PrvtI_HeavyArmory_CCOR_Patch.esp")'
 
   - name: 'PrvtIRoyalArmory.esp'
     url:
@@ -20795,7 +20967,8 @@ plugins:
     after: [ 'Immersive War and Violence.esp' ]
     clean:
       - crc: 0xC536917E
-        util: 'SSEEdit v4.0.3'
+        util: 'SSEEdit v4.1.5f'
+        # No Dragon Attack
       - crc: 0x51F9FAE2
         util: 'SSEEdit v4.0.3'
 
@@ -23266,10 +23439,12 @@ plugins:
       - 'Paradise_City_Rorikstead.esp'
       - name: 'The Great Cities - Minor Cities and Towns.esp'
         condition: 'checksum("JKs Skyrim.esp", 932DCD5F) or not active("The Great Cities of JK''s (North|Skyrim) - Patch.esp")'
-      - 'The Great City of Dawnstar.esp'
+      - name: 'The Great City of Dawnstar.esp'
+        condition: 'not active("COTN Dawnstar - JK''s Skyrim - TGC Dawnstar Patch.esp")'
       - name: 'The Great City of Falkreath.esp'
         condition: 'not active("COTN Falkreath - JKs Skyrim - TGCF Patch.esp")'
-      - 'The Great City of Morthal.esp'
+      - name: 'The Great City of Morthal.esp'
+        condition: 'not active("COTN Morthal - JKs Skyrim - The Great City of Morthal Patch.esp")'
       - 'The Great City of Winterhold.esp'
     msg:
       - <<: *compatIssuesWithX
@@ -23427,7 +23602,7 @@ plugins:
     clean:
       # Original
       - crc: 0xC2ACB37F
-        util: 'SSEEdit v4.0.4c'
+        util: 'SSEEdit v4.1.5f'
       # ETaC Replacer
       - crc: 0x932DCD5F
         util: 'SSEEdit v4.0.4c'
@@ -24623,11 +24798,6 @@ plugins:
           - 'Ryn''s Standing Stones'
           - '[Ryn''s Skyrim Official Patch Hub](https://www.nexusmods.com/skyrimspecialedition/mods/73778/)'
         condition: 'active("Ryn''s Standing Stones.esp") and not active("Ryn''s_Standing_Stones_Ryn''s_Farms_PATCH.esp")'
-      - <<: *patch3rdParty
-        subs:
-          - 'Skyrim Sewers'
-          - '[Patches for Ryn''s](https://www.nexusmods.com/skyrimspecialedition/mods/74233/)'
-        condition: 'active("SkyrimSewers.esp") and not active("Ryn''s Farms - Skyrim Sewers.esp")'
     clean:
       - crc: 0x1BE50A99
         util: 'SSEEdit v4.0.4'
@@ -24742,6 +24912,18 @@ plugins:
     clean:
       - crc: 0xF3925568
         util: 'SSEEdit v4.0.3h (Hotfix 1)'
+
+  - name: 'Shadows over Ilinalta.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/117021/'
+        name: 'Shadows Over Ilinalta'
+    tag:
+      - C.Location
+      - Keywords
+      - Names
+    clean:
+      - crc: 0x39858C47
+        util: 'SSEEdit v4.1.5d'
 
   - name: 'Shor''s Stone.esp'
     url:
@@ -26141,6 +26323,17 @@ plugins:
       - crc: 0xD5CC92CE
         util: 'SSEEdit v4.0.2'
 
+  - name: 'DravenManor.esp'
+    url:
+      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/2418/'
+        name: 'Draven Manor'
+    after: [ 'Landscape Fixes For Grass mods - Cutting Room Floor Locations.esp' ]
+    dirty:
+      - <<: *quickClean
+        crc: 0xD75782C1
+        util: '[SSEEdit v4.1.5g](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
+        itm: 1
+
   - name: 'DT_VandfaldCottage.esp'
     url: [ 'https://www.nexusmods.com/skyrimspecialedition/mods/28071/' ]
     dirty:
@@ -26171,36 +26364,22 @@ plugins:
         util: '[SSEEdit v4.0.2j](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
         nav: 3
 
-  - name: 'Eli_Breezehome.*\.esp'
-    url:
-      - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/48931/'
-        name: 'Eli''s Breezehome Optimization Packages and Patches'
-  - name: 'Eli_Breezehome.esp'
+  - name: 'Eli_Breezehome( \[(ADDON|DEV|PATCH) - .+\])?\.esp'
     url:
       - link: 'https://www.nexusmods.com/skyrimspecialedition/mods/2829/'
         name: 'Eli''s Breezehome Overhaul'
+  - name: 'Eli_Breezehome.esp'
+    group: *lowPriorityGroup
     after:
       - 'ELFX - NoBreezehome.esp'
       - 'ELFX - NoPlayerHomes.esp'
       - name: 'ELFX Shadows.esp'
         condition: 'not active("Eli_Breezehome [ADDON - ELFX-FX].esp")'
-      - 'JKs Whiterun.esp'
-    msg:
-      - <<: *patchUpdateAvailable
-        type: warn
-        subs: [ '[Eli''s Breezehome Optimization Packages and Affiliated Patches](https://www.nexusmods.com/skyrimspecialedition/mods/48931/)' ]
-        condition: 'active("Eli_Breezehome.esp") and not version("Eli_Breezehome.esp", "1.6.0", >=)'
-      - <<: *requiresResources
-        subs: [ '[Eli''s Breezehome Overhaul](https://www.nexusmods.com/skyrimspecialedition/mods/2829/)' ]
-        condition: 'not file("Eli_Breezehome.bsa") and not file("Eli_Breezehome - Textures.bsa") and not file("meshes/elianora/breezehome/eli_byohtowerfull.nif")'
-    tag:
-      - C.Light
-      - C.Water
-    clean:
-      - crc: 0x4F0AA695
-        util: 'SSEEdit v4.0.4b'
-      - crc: 0xEF20832C
-        util: 'SSEEdit v4.0.4b'
+    dirty:
+      - <<: *quickClean
+        crc: 0x9C90ACD4
+        util: '[SSEEdit v4.1.5g](https://www.nexusmods.com/skyrimspecialedition/mods/164)'
+        itm: 1
   - name: 'Eli_Breezehome [ADDON - ELFX-FX].esp'
     after: [ 'ELFX Shadows.esp' ]
 
@@ -29466,7 +29645,7 @@ plugins:
         condition: 'active("Cutting Room Floor.esp") and not active("UltimateCollege_CRF_Patch.esp")'
       - <<: *patchIncluded
         subs: [ 'Diversity - A Character Overhaul' ]
-        condition: 'active("Diversity - A Character Overhaul.esp") and (not active("UltimateCollege_Diversity_Patch.esp") or not active("UltimateCollege_Diversity_CRF_VanillaHair.esp"))'
+        condition: 'active("Diversity - A Character Overhaul.esp") and not active("UltimateCollege_Diversity_(CRF_VanillaHair|Patch)\.esp")'
       - <<: *patchIncluded
         subs: [ 'Dynamic Firewood Stacks' ]
         condition: 'active("Dynamic Firewood Stacks.esp") and not active("UltimateCollege_DynFwS_Patch.esp")'
@@ -29553,7 +29732,7 @@ plugins:
         condition: 'active("Snazzy Furniture and Clutter Overhaul.esp") and not active("UltimateCollege_SFCO_Patch.esp")'
       - <<: *patchIncluded
         subs: [ 'Solitude and Temple Frescoes' ]
-        condition: 'active("SolitudeTempleFrescoes.esp") and (not active("UltimateCollege_Frescoes_Patch.esp") or not active("UltimateCollege_Frescoes19ESL_Patch.esp") or not active("UltimateCollege_Frescoes19NLESL_Patch.esp"))'
+        condition: 'active("SolitudeTempleFrescoes.esp") and not active("UltimateCollege_Frescoes(19(NL)?ESL)?_Patch\.esp")'
       - <<: *patchIncluded
         subs: [ 'The Tools of Kagrenac' ]
         condition: 'active("Tools of Kagrenac.esp") and not active("UltimateCollege_ToK_Patch.esp")'
